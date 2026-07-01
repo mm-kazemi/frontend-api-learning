@@ -1,6 +1,6 @@
 import type { Product, ProductsParams, ProductsResponse } from "@/types/product";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE_URL = "https://dummyjson.com"
 
 export async function fetchProducts(
   params: ProductsParams = {},
