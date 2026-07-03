@@ -6,7 +6,7 @@ export async function fetchProducts(
   params: ProductsParams = {},
   signal?: AbortSignal
 ): Promise<ProductsResponse> {
-  const { limit = 12, skip = 0, q } = params;
+  const { limit = 15, skip = 0, q } = params;
 
   const url = q
     ? `${BASE_URL}/products/search?q=${encodeURIComponent(q)}&limit=${limit}&skip=${skip}`

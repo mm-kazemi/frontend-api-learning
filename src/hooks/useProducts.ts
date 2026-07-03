@@ -29,8 +29,11 @@ export function useProducts(query: string, page: number, limit: number) {
       controller.signal
     )
       .then((data) => {
+        const filtered = data.products.filter((product) =>
+            product.title.includes(query)
+        );
         setState({
-          products: data.products,
+          products: filtered,
           total: data.total,
           loading: false,
           error: null,
