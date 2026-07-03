@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useProducts } from "@/hooks/useProducts";
 import styles from "./products.module.css";
 
-const LIMIT = 12;
+const LIMIT = 15;
 
 export default function ProductsPage() {
   const [searchInput, setSearchInput] = useState("");
