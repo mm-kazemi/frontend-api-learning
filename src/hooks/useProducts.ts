@@ -29,18 +29,15 @@ export function useProducts(query: string, page: number, limit: number) {
       controller.signal
     )
       .then((data) => {
-        const filtered = data.products.filter((product) =>
-            product.title.includes(query)
-        );
         setState({
-          products: filtered,
+          products: data.products,
           total: data.total,
           loading: false,
           error: null,
         });
       })
       .catch((err: Error) => {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
           setState((prev) => ({
             ...prev,
             loading: false,

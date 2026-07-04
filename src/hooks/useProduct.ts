@@ -32,7 +32,7 @@ export function useProduct(id: number) {
         setState({ product: data, loading: false, error: null });
       })
       .catch((err: Error) => {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
           setState({ product: null, loading: false, error: err.message });
         }
       });
