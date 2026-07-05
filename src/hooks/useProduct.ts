@@ -1,44 +1,17 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 import { fetchProductById } from "@/services/productService";
-import type { Product } from "@/types/product";
-
-interface UseProductState {
-  product: Product | null;
-  loading: boolean;
-  error: string | null;
-}
 
 export function useProduct(id: number) {
-  const [state, setState] = useState<UseProductState>({
-    product: null,
-    loading: true,
-    error: null,
+  const { data, isLoading, error } = useQuery({
+    queryKey: queryKeys.products.detail(id),
+    queryFn: ({ signal }) => fetchProductById(id, signal),
+    enabled: !!id && !isNaN(id),
   });
 
-  useEffect(() => {
-    if (!id || isNaN(id)) {
-      setState({ product: null, loading: false, error: "شناسه محصول نامعتبر است" });
-      return;
-    }
-
-    const controller = new AbortController();
-
-    setState({ product: null, loading: true, error: null });
-
-    fetchProductById(id, controller.signal)
-      .then((data) => {
-        setState({ product: data, loading: false, error: null });
-      })
-      .catch((err: Error) => {
-        if (err.name !== "AbortError" && err.name !== "CanceledError") {
-          setState({ product: null, loading: false, error: err.message });
-        }
-      });
-
-    return () => controller.abort();
-  }, [id]);
-
-  return state;
+  return {
+    product: data ?? null,
+    loading: isLoading,
+    error: error?.message ?? null,
+  };
 }

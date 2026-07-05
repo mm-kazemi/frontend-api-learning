@@ -1,53 +1,38 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 import { fetchProducts } from "@/services/productService";
-import type { Product } from "@/types/product";
-
-interface UseProductsState {
-  products: Product[];
-  total: number;
-  loading: boolean;
-  error: string | null;
-}
 
 export function useProducts(query: string, page: number, limit: number) {
-  const [state, setState] = useState<UseProductsState>({
-    products: [],
-    total: 0,
-    loading: true,
-    error: null,
+  const { data, isLoading, error } = useQuery({
+    queryKey: queryKeys.products.list(page, limit, query),
+    queryFn: ({ signal }) =>
+      fetchProducts(
+        {
+          q: query || undefined,
+          limit: query ? 100 : limit,
+          skip: query ? 0 : (page - 1) * limit,
+        },
+        signal
+      ),
+    select: (data) => {
+      const filtered = data.products.filter((p) =>
+        p.title.toLowerCase().includes(query.toLowerCase())
+      );
+      const start = (page - 1) * limit;
+      const paginated = filtered.slice(start, start + limit);
+
+      return {
+        ...data,
+        products: paginated,
+        total: filtered.length,
+      };
+    },
   });
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-
-    fetchProducts(
-      { q: query || undefined, limit, skip: (page - 1) * limit },
-      controller.signal
-    )
-      .then((data) => {
-        setState({
-          products: data.products,
-          total: data.total,
-          loading: false,
-          error: null,
-        });
-      })
-      .catch((err: Error) => {
-        if (err.name !== "AbortError" && err.name !== "CanceledError") {
-          setState((prev) => ({
-            ...prev,
-            loading: false,
-            error: err.message,
-          }));
-        }
-      });
-
-    return () => controller.abort();
-  }, [query, page, limit]);
-
-  return state;
+  return {
+    products: data?.products ?? [],
+    total: data?.total ?? 0,
+    loading: isLoading,
+    error: error?.message ?? null,
+  };
 }
