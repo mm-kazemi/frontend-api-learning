@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useProducts } from "@/hooks/useProducts";
 import styles from "./products.module.css";
+import { useCategories } from "@/hooks/useCategories";
 
 const LIMIT = 15;
 
@@ -11,8 +12,20 @@ export default function ProductsPage() {
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [category, setCategory] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
-  const { products, total, loading, error } = useProducts(query, page, LIMIT);
+  const { categories } = useCategories();
+
+  const { products, total, loading, error } = useProducts(
+    query,
+    page,
+    LIMIT,
+    category,
+    sortBy,
+    priceRange
+  );
 
   const totalPages = Math.ceil(total / LIMIT);
 
@@ -26,6 +39,9 @@ export default function ProductsPage() {
     setSearchInput("");
     setQuery("");
     setPage(1);
+    setCategory("");
+    setSortBy("");
+    setPriceRange([0, 1000]);
   }
 
   return (
@@ -66,6 +82,48 @@ export default function ProductsPage() {
             {total} نتیجه برای «{query}»
           </p>
         )}
+
+        <select
+          value={category}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setPage(1);
+          }}
+          className={styles.filterSelect}
+        >
+          <option value="">همه دسته‌بندی‌ها</option>
+          {categories.map((cat) => (
+            <option key={cat.slug} value={cat.slug}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={sortBy}
+          onChange={(e) => {
+            setSortBy(e.target.value);
+            setPage(1);
+          }}
+          className={styles.filterSelect}
+        >
+          <option value="">مرتب سازی</option>
+          <option value="price">قیمت (کم به زیاد)</option>
+          <option value="rating">بهترین امتیاز</option>
+        </select>
+
+        <input
+          type="range"
+          min={0}
+          max={1000}
+          value={priceRange[1]}
+          onChange={(e) => {
+            setPriceRange([0, Number(e.target.value)]);
+            setPage(1);
+          }}
+          className={styles.filterRange}
+        />
+        <span>تا ${priceRange[1]}</span>
       </header>
 
       <main className={styles.main}>

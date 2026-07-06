@@ -24,3 +24,9 @@ export interface ProductsParams {
   skip?: number;
   q?: string;
 }
+
+export interface Category {
+  slug: string;
+  name: string;
+  url: string;
+}
