@@ -1,53 +1,60 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 import { fetchProducts } from "@/services/productService";
-import type { Product } from "@/types/product";
 
-interface UseProductsState {
-  products: Product[];
-  total: number;
-  loading: boolean;
-  error: string | null;
-}
+export function useProducts(
+  query: string,
+  page: number,
+  limit: number,
+  category: string,
+  sortBy: string,
+  priceRange: [number, number]
+) {
+  const needsAllData = !!query || !!category;
 
-export function useProducts(query: string, page: number, limit: number) {
-  const [state, setState] = useState<UseProductsState>({
-    products: [],
-    total: 0,
-    loading: true,
-    error: null,
+  const { data, isLoading, error } = useQuery({
+    queryKey: queryKeys.products.list(
+      page,
+      limit,
+      query,
+      category,
+      sortBy,
+      priceRange
+    ),
+    queryFn: ({ signal }) =>
+      fetchProducts(
+        {
+          q: query || undefined,
+          limit: needsAllData ? 100 : limit,
+          skip: needsAllData ? 0 : (page - 1) * limit,
+        },
+        signal
+      ),
+    select: (data) => {
+      const filtered = data.products
+        .filter((p) => p.title.toLowerCase().includes(query.toLowerCase()))
+        .filter((p) => (category ? p.category === category : true))
+        .filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1])
+        .sort((a, b) => {
+          if (sortBy === "price") return a.price - b.price;
+          if (sortBy === "rating") return b.rating - a.rating;
+          return 0;
+        });
+      const start = (page - 1) * limit;
+      const paginated = filtered.slice(start, start + limit);
+
+      return {
+        ...data,
+        products: paginated,
+        total: filtered.length,
+      };
+    },
   });
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-
-    fetchProducts(
-      { q: query || undefined, limit, skip: (page - 1) * limit },
-      controller.signal
-    )
-      .then((data) => {
-        setState({
-          products: data.products,
-          total: data.total,
-          loading: false,
-          error: null,
-        });
-      })
-      .catch((err: Error) => {
-        if (err.name !== "AbortError") {
-          setState((prev) => ({
-            ...prev,
-            loading: false,
-            error: err.message,
-          }));
-        }
-      });
-
-    return () => controller.abort();
-  }, [query, page, limit]);
-
-  return state;
+  return {
+    products: data?.products ?? [],
+    total: data?.total ?? 0,
+    loading: isLoading,
+    error: error?.message ?? null,
+  };
 }

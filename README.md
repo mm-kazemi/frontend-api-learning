@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend API Learning
 
-## Getting Started
+یک پروژه آموزشی چند فازی برای یادگیری مفاهیم کار با API در React/Next.js.
 
-First, run the development server:
+## هدف پروژه
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+یادگیری عملی مفاهیم پایه‌ای API در یک محیط واقعی، بدون انتزاع‌های اضافی:
+
+- **GET requests** ساده (لیست و آیتم تکی)
+- **Pagination** با `limit` و `skip`
+- **Search و Filter** کردن داده
+- **مدیریت سه حالت:** loading / error / empty state
+- **TypeScript** برای type-safe API responses
+- **AbortController** برای cleanup صحیح در `useEffect`
+- **Custom Hooks** برای جداسازی data logic از UI
+
+## تکنولوژی‌ها
+
+| ابزار | نسخه | هدف |
+|-------|-------|------|
+| Next.js | 16.2.9 | Framework — App Router |
+| React | 19.2.4 | UI Library |
+| TypeScript | ^5 | Type Safety |
+| CSS Modules | — | Styling (بدون هیچ کتابخانه‌ای) |
+| dummyjson.com | — | Fake REST API |
+
+## ساختار پروژه
+
+```
+src/
+├── types/
+│   └── product.ts            # Product, ProductsResponse, ProductsParams
+├── services/
+│   └── productService.ts     # fetchProducts(), fetchProductById()
+├── hooks/
+│   ├── useProducts.ts        # لیست + pagination + search + AbortController
+│   └── useProduct.ts         # محصول تکی + AbortController
+└── app/
+    ├── layout.tsx             # Root layout — system fonts (بدون Google Fonts)
+    ├── globals.css            # CSS Variables + reset
+    ├── page.tsx               # صفحه خانه (Server Component)
+    ├── page.module.css
+    ├── products/
+    │   ├── page.tsx           # لیست محصولات (Client Component)
+    │   └── products.module.css
+    └── products/[id]/
+        ├── page.tsx           # جزئیات محصول (Client Component)
+        └── product.module.css
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## راه‌اندازی
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# ۱. نصب وابستگی‌ها
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# ۲. متغیر محیطی (فایل .env.local از قبل موجود است)
+# محتوا:
+NEXT_PUBLIC_API_BASE_URL=https://dummyjson.com
 
-## Learn More
+# ۳. اجرا
+npm run dev
+# → http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+# بررسی type safety
+npx tsc --noEmit
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## مسیرهای برنامه
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | توضیح | نوع Component |
+|-------|-------|---------------|
+| `/` | صفحه خانه | Server Component |
+| `/products` | لیست محصولات با جستجو و pagination | Client Component |
+| `/products/[id]` | جزئیات یک محصول | Client Component |
 
-## Deploy on Vercel
+## معماری لایه‌ای
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+Component → Custom Hook → Service → API
+   (UI)       (state)     (fetch)   (dummyjson)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+هر لایه فقط با لایه مجاور خود صحبت می‌کند.
+
+## فازهای توسعه
+
+| فاز | موضوع | وضعیت |
+|-----|--------|--------|
+| ۱ | Native Fetch + Custom Hooks | ✅ کامل |
+| ۲ | جایگزینی با Axios در `services/` | ⏳ برنامه‌ریزی‌شده |
+| ۳ | جایگزینی Custom Hooks با React Query | ⏳ برنامه‌ریزی‌شده |
+| ۴ | افزودن Redux Toolkit برای client state | ⏳ برنامه‌ریزی‌شده |

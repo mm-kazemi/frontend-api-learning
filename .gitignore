@@ -1,41 +1,57 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ── Dependencies ────────────────────────────────────────────
+node_modules/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# ── Next.js ─────────────────────────────────────────────────
+.next/
+out/
 
-# testing
-/coverage
+# ── Environment variables ────────────────────────────────────
+# فقط .env.example یا .env.sample می‌توانند commit شوند
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
 
-# next.js
-/.next/
-/out/
+# ── TypeScript ───────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
 
-# production
-/build
+# ── Testing ─────────────────────────────────────────────────
+coverage/
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# ── Logs ────────────────────────────────────────────────────
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# ── OS ──────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
 
-# vercel
+# ── IDE — VS Code ────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ── IDE — JetBrains ──────────────────────────────────────────
+# فایل‌های اختصاصی هر developer را ignore کن؛
+# .idea/.gitignore خودش موارد داخلی را مدیریت می‌کند
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/httpRequests/
+
+# ── Misc ─────────────────────────────────────────────────────
+*.pem
 .vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
