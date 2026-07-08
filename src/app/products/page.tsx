@@ -83,47 +83,51 @@ export default function ProductsPage() {
           </p>
         )}
 
-        <select
-          value={category}
-          onChange={(e) => {
-            setCategory(e.target.value);
-            setPage(1);
-          }}
-          className={styles.filterSelect}
-        >
-          <option value="">همه دسته‌بندی‌ها</option>
-          {categories.map((cat) => (
-            <option key={cat.slug} value={cat.slug}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        <div className={styles.filterBar}>
+          <select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
+            className={styles.filterSelect}
+          >
+            <option value="">همه دسته‌بندی‌ها</option>
+            {categories.map((cat) => (
+              <option key={cat.slug} value={cat.slug}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
 
-        <select
-          value={sortBy}
-          onChange={(e) => {
-            setSortBy(e.target.value);
-            setPage(1);
-          }}
-          className={styles.filterSelect}
-        >
-          <option value="">مرتب سازی</option>
-          <option value="price">قیمت (کم به زیاد)</option>
-          <option value="rating">بهترین امتیاز</option>
-        </select>
+          <select
+            value={sortBy}
+            onChange={(e) => {
+              setSortBy(e.target.value);
+              setPage(1);
+            }}
+            className={styles.filterSelect}
+          >
+            <option value="">مرتب سازی</option>
+            <option value="price">قیمت (کم به زیاد)</option>
+            <option value="rating">بهترین امتیاز</option>
+          </select>
 
-        <input
-          type="range"
-          min={0}
-          max={1000}
-          value={priceRange[1]}
-          onChange={(e) => {
-            setPriceRange([0, Number(e.target.value)]);
-            setPage(1);
-          }}
-          className={styles.filterRange}
-        />
-        <span>تا ${priceRange[1]}</span>
+          <div className={styles.rangeWrap}>
+            <input
+              type="range"
+              min={0}
+              max={1000}
+              value={priceRange[1]}
+              onChange={(e) => {
+                setPriceRange([0, Number(e.target.value)]);
+                setPage(1);
+              }}
+              className={styles.filterRange}
+            />
+            <span>تا ${priceRange[1]}</span>
+          </div>
+        </div>
       </header>
 
       <main className={styles.main}>
