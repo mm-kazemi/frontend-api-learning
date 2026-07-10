@@ -4,6 +4,7 @@ import { use } from "react";
 import Link from "next/link";
 import { useProduct } from "@/hooks/useProduct";
 import styles from "./product.module.css";
+import { useCartContext } from "@/context/CartContext";
 
 export default function ProductDetailPage({
   params,
@@ -12,6 +13,9 @@ export default function ProductDetailPage({
 }) {
   const { id } = use(params);
   const { product, loading, error } = useProduct(Number(id));
+  const { addToCart, items } = useCartContext();
+
+  const isInCart = items.some((item) => item.product.id === product?.id);
 
   if (loading) {
     return (
@@ -111,6 +115,12 @@ export default function ProductDetailPage({
                 </span>
               </div>
             </div>
+            <button
+              onClick={() => product && addToCart(product)}
+              className={styles.addToCartBtn}
+            >
+              {isInCart ? "افزودن دوباره به سبد" : "افزودن به سبد"}
+            </button>
           </div>
         </div>
       </div>

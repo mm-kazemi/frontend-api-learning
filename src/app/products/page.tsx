@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useProducts } from "@/hooks/useProducts";
 import styles from "./products.module.css";
 import { useCategories } from "@/hooks/useCategories";
+import { useCart } from "@/hooks/useCart";
 
 const LIMIT = 15;
 
@@ -44,6 +45,8 @@ export default function ProductsPage() {
     setPriceRange([0, 1000]);
   }
 
+  const { addToCart, totalItems } = useCart();
+
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
@@ -52,6 +55,12 @@ export default function ProductsPage() {
             ← خانه
           </Link>
           <h1 className={styles.pageTitle}>محصولات</h1>
+          <Link href="/cart" className={styles.cartLink}>
+            🛒 سبد خرید
+            {totalItems > 0 && (
+              <span className={styles.cartBadge}>{totalItems}</span>
+            )}
+          </Link>
         </div>
 
         <form onSubmit={handleSearch} className={styles.searchForm}>
@@ -186,6 +195,15 @@ export default function ProductsPage() {
                       ★ {product.rating.toFixed(1)}
                     </span>
                   </div>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addToCart(product);
+                    }}
+                    className={styles.cardAddBtn}
+                  >
+                    + سبد خرید
+                  </button>
                 </div>
               </Link>
             ))}
