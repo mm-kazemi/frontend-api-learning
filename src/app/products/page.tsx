@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useProducts } from "@/hooks/useProducts";
 import styles from "./products.module.css";
 import { useCategories } from "@/hooks/useCategories";
-import { useCart } from "@/hooks/useCart";
+import { useCartContext } from "@/context/CartContext";
 
 const LIMIT = 15;
 
@@ -45,7 +45,7 @@ export default function ProductsPage() {
     setPriceRange([0, 1000]);
   }
 
-  const { addToCart, totalItems } = useCart();
+  const { addToCart, totalItems } = useCartContext();
 
   return (
     <div className={styles.wrapper}>
